@@ -1,0 +1,14 @@
+{
+  "generator-kraken": {
+    "taskModule": "grunt",
+    "lintModule": "eslint",
+    "description": "Server for bet_oracle.",
+    "author": "chriamue@gmail.com",
+    "templateModule": "makara",
+    "i18n": false,
+    "componentPackager": "bower",
+    "cssModule": "less",
+    "jsModule": "requirejs",
+    "useJson": null
+  }
+}
