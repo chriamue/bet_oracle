@@ -1,0 +1,12 @@
+@startuml bet_oracle
+actor User
+card WebGui
+node Bet_Oracle_Server
+file Smart_Contract
+database OpenLigaDB
+User <--> WebGui
+WebGui --> Smart_Contract : config
+WebGui --> Bet_Oracle_Server : register
+Bet_Oracle_Server --> OpenLigaDB : api request
+Bet_Oracle_Server --> Smart_Contract : update and execute
+@enduml
