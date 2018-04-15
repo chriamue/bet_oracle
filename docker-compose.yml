@@ -1,0 +1,20 @@
+version: "3"
+services:
+
+  bet_oracle:
+    build:
+      context: ./bet_oracle_docker
+    hostname: "bet_oracle"
+    ports:
+      - "8080:80"
+
+  ethereum:
+    build:
+      context: ./ethereum_docker
+    hostname: "ethereum"
+    ports:
+      - "30303:30303"
+      - "30303:30303/udp"
+      - "8545:8545"
+    entrypoint: "/root/start.sh"
+    command: '--rpccorsdomain="*" --rpc'
