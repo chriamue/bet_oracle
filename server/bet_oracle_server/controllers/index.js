@@ -3,6 +3,7 @@
 var IndexModel = require('../models/index');
 
 var games = require('./games');
+var allgames = require('./allgames');
 var game = require('./game');
 
 module.exports = function (router) {
@@ -18,6 +19,7 @@ module.exports = function (router) {
     });
 
     router.get('/games', games.get);
+    router.get('/allgames', allgames.get);
     router.get('/game/:id', game.get);
 
 };

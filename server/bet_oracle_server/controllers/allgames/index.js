@@ -18,15 +18,12 @@ exports.get = function (req, res) {
             if (res2.statusCode === 200) {
                 try {
                     var data = JSON.parse(json);
-                    var obj = {games:[]}
+                    var obj = { games: [] }
                     var current = new Date()
-                    for(var game_index in data){
+                    for (var game_index in data) {
                         var game = data[game_index]
                         var time = new Date(game.MatchDateTimeUTC)
-                        // game not finished
-                        if(time > current){
-                           obj.games.push({gameid:game.MatchID, team1: game.Team1.TeamName, team2: game.Team2.TeamName, time:game.MatchDateTimeUTC}) 
-                        }
+                        obj.games.push({ gameid: game.MatchID, team1: game.Team1.TeamName, team2: game.Team2.TeamName, time: game.MatchDateTimeUTC })
                     }
                     res.render('games', obj);
                 } catch (e) {
