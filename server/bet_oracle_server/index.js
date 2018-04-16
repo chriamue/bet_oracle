@@ -1,5 +1,6 @@
 'use strict';
 
+var mongoose = require('mongoose');
 var express = require('express');
 var kraken = require('kraken-js');
 
@@ -19,6 +20,9 @@ options = {
         next(null, config);
     }
 };
+
+var config = require('./config');
+mongoose.connect(config.mongourl);
 
 app = module.exports = express();
 app.use(kraken(options));

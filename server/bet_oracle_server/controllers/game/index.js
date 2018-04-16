@@ -4,25 +4,31 @@ var https = require('https');
 
 var GameModel = require('../../models/game');
 
-const generate_contract = function(id, data){
-    GameModel.findOne({ id: id}, function(err, game) {
-        if(err || !game) {
+const generate_contract = function (id, obj, res) {
+    GameModel.findOne({ id: id }, function (err, game) {
+        if (err || !game) {
             game = new GameModel();
             game.id = id;
-            game.team1 = data.Team1.TeamName;
-            game.team2 = data.Team2.TeamName;
-            game.time = new Date(data.MatchDateTimeUTC);
-            game.save(function(err) {
-                if(err)
+            game.team1 = obj.team1;
+            game.team2 = obj.team2;
+            game.time = new Date(obj.time);
+            game.save(function (err) {
+                if (err)
                     console.error('failed saving game ', err);
-                console.log("saved: " + str(id));
+                console.log("saved: " + id);
+                res.render('game', obj);
             });
+        } else {
+            if (!obj.paidoff)
+                obj.contract = game.contract;
+            else
+                obj.contract = "Finished"
+            res.render('game', obj);
         }
-        return game.contract
     });
 }
 
-const gamejson = function (id, data) {
+const gamejson = function (id, data, res) {
     var points1 = "-";
     var points2 = "-";
     if (data.MatchResults.length > 0) {
@@ -33,9 +39,9 @@ const gamejson = function (id, data) {
         gameid: id, team1: data.Team1.TeamName, team2: data.Team2.TeamName,
         points1: points1, points2: points2,
         time: data.MatchDateTimeUTC,
-        contract: generate_contract(id, data)
+        contract: "Generating"
     }
-    return obj;
+    generate_contract(id, obj, res)
 }
 
 exports.get = function (req, res) {
@@ -55,8 +61,8 @@ exports.get = function (req, res) {
             if (res2.statusCode === 200) {
                 try {
                     var data = JSON.parse(json);
-                    var obj = gamejson(id, data);
-                    res.render('game', obj);
+                    gamejson(id, data, res);
+
                 } catch (e) {
                     return res.status(500).send('Error parsing JSON!' + e);
                 }
