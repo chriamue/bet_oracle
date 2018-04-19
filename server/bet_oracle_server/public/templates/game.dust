@@ -4,5 +4,7 @@
 <h1>{gameid}: {time}</h1>
 <h3>{team1} {points1}</h3>
 <h3>{team2} {points2}</h3>
-<h2>Contract: {contract}</h2>
+<h2>Contract Address: {contract}</h2>
+<h2>Contract Binary</h2>
+<code>{bin}</code>
 {/body}
