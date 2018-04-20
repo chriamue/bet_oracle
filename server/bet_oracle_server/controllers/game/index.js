@@ -17,7 +17,7 @@ const compiled = Solidity.compile(source, 1).contracts[':Bet'];
 const contract_interface = compiled.interface;
 const contract_bytecode = compiled.bytecode;
 
-const deploy = async () => {
+var deploy = async function() {
     console.log('deploying ...')
     await web3.eth.personal.unlockAccount(config.etherAccount, config.etherPassword);
 
@@ -53,15 +53,16 @@ const deploy = async () => {
             });
 
     console.log('deployed!');
-    web3.personal.lockAccount(config.etherAccount);
+    await web3.personal.lockAccount(config.etherAccount);
+    console.log(contractAddress);
     return contractAddress;
 };
 
 
 var GameModel = require('../../models/game');
 
-const generate_contract = function (id, obj, res) {
-    GameModel.findOne({ id: id }, function (err, game) {
+const generate_contract = async (id, obj, res) => {
+    GameModel.findOne({ id: id }, async function (err, game) {
         if (err || !game) {
             // deploy();
             game = new GameModel();
@@ -69,7 +70,10 @@ const generate_contract = function (id, obj, res) {
             game.team1 = obj.team1;
             game.team2 = obj.team2;
             game.time = new Date(obj.time);
-
+            var contractAddress = await deploy();
+            console.log('contract', contractAddress);
+            game.contract = contractAddress;
+            game.paidoff = false;
             game.save(function (err) {
                 if (err)
                     console.error('failed saving game ', err);
@@ -78,7 +82,7 @@ const generate_contract = function (id, obj, res) {
             });
         } else {
             if (!obj.paidoff) {
-                obj.contract = deploy();
+                obj.contract = game.contract;
             }
             else
                 obj.contract = "Finished"
