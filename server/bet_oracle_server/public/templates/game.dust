@@ -6,5 +6,5 @@
 <h3>{team2} {points2}</h3>
 <h2>Contract Address: {contract}</h2>
 <h2>Contract Binary</h2>
-<code>{bin}</code>
+<textarea cols='80' rows='10'>{bin}</textarea>
 {/body}
