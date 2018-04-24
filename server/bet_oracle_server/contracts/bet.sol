@@ -15,7 +15,7 @@ contract Bet {
     uint wager = 1;
     uint fee = 1;
 
-    function Bet(uint wager_, uint fee_) public {
+    constructor(uint wager_, uint fee_) public {
         oracle = msg.sender;
         wager = wager_;
         fee = fee_;
