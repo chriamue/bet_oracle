@@ -5,6 +5,8 @@ const config = require('../../config');
 const fs = require('fs');
 const Web3 = require('web3')
 const Solidity = require('solc')
+var GameModel = require('../../models/game');
+
 var web3 = new Web3();
 web3.setProvider(new Web3.providers.HttpProvider(config.etherHost));
 var gasPrice = 1000000000;
@@ -59,10 +61,6 @@ var deploy = async function (callback) {
     console.log(contractAddress);
     return contractAddress;
 };
-
-
-var GameModel = require('../../models/game');
-
 
 const load_game_object = function (id, callback) {
     GameModel.findOne({ id: id }, (err, game) => {
@@ -174,7 +172,7 @@ const get_game_object = function (id, callback) {
         if (err) {
             console.log(err);
             if (err === 'game not found') {
-                init_game_object(id, callback = (err, obj) => {
+                init_game_object(id, (err, obj) => {
                     callback(null, obj);
                 });
             } else {
