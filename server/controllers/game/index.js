@@ -19,6 +19,9 @@ const compiled = Solidity.compile(contract_source, 1).contracts[':Bet'];
 const contract_interface = compiled.interface;
 const contract_bytecode = compiled.bytecode;
 
+const wager = web3.utils.toWei('0.1', 'ether')
+const fee = wager * 0.02;
+
 var deploy = async function (callback) {
     console.log('deploying ...')
     await web3.eth.personal.unlockAccount(config.etherAccount, config.etherPassword);
@@ -27,7 +30,7 @@ var deploy = async function (callback) {
     console.log('contract');
     var contractDeploy = await contract.deploy({
         data: '0x' + contract_bytecode,
-        arguments: [10, 1]
+        arguments: [wager, fee]
     });
     var gasEstimated = 0;
 
@@ -120,6 +123,7 @@ const store_contract = function (obj, contract, callback) {
     game.time = new Date(obj.time);
     game.contract = contract;
     game.paidoff = false;
+    game.wager = wager;
     game.save(function (err) {
         if (err) {
             callback(err);
@@ -147,6 +151,7 @@ const init_game_object = function (id, callback) {
                 points1: points1, points2: points2,
                 time: data.MatchDateTimeUTC,
                 contract: "Generating",
+                wager: wager,
                 bin: contract_interface
             }
             deploy_contract(id, obj, (err, contract) => {
@@ -190,7 +195,9 @@ exports.get = function (req, res) {
         if (err) {
             return res.status(500).send(err);
         } else {
-            obj.bin = contract_source;
+            obj.bin = contract_interface;
+            console.log(obj.wager);
+            obj.wager = web3.utils.fromWei(obj.wager.toString(), 'ether');
             res.render('game', obj);
         }
     });

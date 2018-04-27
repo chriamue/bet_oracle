@@ -9,10 +9,18 @@ services:
   server:
     build:
       context: ./server
-    hostname: "bet_oracle"
     env_file:
       - .env
     ports:
       - "80:8000"
     depends_on:
       - mongo
+
+  oracle:
+    build:
+      context: ./server
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+    command: "node oracle.js"

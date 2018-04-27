@@ -1,6 +1,13 @@
 pragma solidity ^0.4.16;
 
 contract Bet {
+
+    modifier costs(uint price) {
+        if (msg.value >= price) {
+            _;
+        }
+    }
+
     struct Participant {
         bool bet_on_draw;
         bool bet_on_team1;
@@ -15,16 +22,16 @@ contract Bet {
     uint team1_count = 0;
     uint team2_count = 0;
     uint draw_count = 0;
-    uint wager = 1;
-    uint fee = 1;
+    uint _wager = 1;
+    uint _fee = 1;
 
     constructor(uint wager_, uint fee_) public {
         oracle = msg.sender;
-        wager = wager_;
-        fee = fee_;
+        _wager = wager_;
+        _fee = fee_;
     }
 
-    function bet_draw() public{
+    function bet_draw() payable costs(_wager) public{
         participants.push(Participant({
             bet_on_draw: true,
             bet_on_team1: false,
@@ -34,7 +41,7 @@ contract Bet {
         draw_count++;
     }
 
-    function bet_team1() public{
+    function bet_team1() payable costs(_wager) public{
         participants.push(Participant({
             bet_on_draw: false,
             bet_on_team1: true,
@@ -44,7 +51,7 @@ contract Bet {
         team1_count++;
     }
 
-    function bet_team2() public{
+    function bet_team2() payable costs(_wager) public{
         participants.push(Participant({
             bet_on_draw: false,
             bet_on_team1: false,
@@ -52,6 +59,16 @@ contract Bet {
             }));
         participant_count++;
         team2_count++;
+    }
+
+    function wager() public view
+            returns (uint w){
+        w = _wager;
+    }
+
+    function fee() public view
+            returns (uint f){
+        f = _fee;
     }
 
     function draw() public view
@@ -71,23 +88,23 @@ contract Bet {
 
     function win_on_draw() public view
             returns (uint win){
-        win = wager * participant_count / draw_count - fee;
+        win = _wager * participant_count / draw_count - _fee;
     }
 
     function win_on_team1() public view
             returns (uint win){
-        win = wager * participant_count / team1_count - fee;
+        win = _wager * participant_count / team1_count - _fee;
     }
 
     function win_on_team2() public view
             returns (uint win){
-        win = wager * participant_count / team2_count - fee;
+        win = _wager * participant_count / team2_count - _fee;
     }
 
-    function end(bool draw, bool team1_won) public {
+    function end(bool draw_, bool team1_won) public {
         if (msg.sender == oracle){
-            uint win = wager;
-            if(draw){
+            uint win = _wager;
+            if(draw_){
                 win = win_on_draw();
                 for(uint i = 0; i < participants.length; i++){
                     if(participants[i].bet_on_draw){
@@ -108,6 +125,7 @@ contract Bet {
                     }
                 }
             }
+            selfdestruct(oracle);
         }
     }
 }

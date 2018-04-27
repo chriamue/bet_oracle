@@ -12,7 +12,8 @@ var web3 = new Web3();
 web3.setProvider(new Web3.providers.HttpProvider(config.etherHost));
 var gasPrice = 1000000000;
 web3.eth.getGasPrice(function (error, result) {
-    console.log(error);
+    if (error)
+        console.log(error);
     gasPrice = result;
 });
 const contract_source = fs.readFileSync('./contracts/bet.sol', "utf8");
@@ -78,24 +79,37 @@ var findOutdatedContracts = function (callback) {
     });
 }
 
-var endContract = async function (contract, results, callback) {
+var endContract = async function (contractAddress, results, callback) {
     await web3.eth.personal.unlockAccount(config.etherAccount, config.etherPassword);
-    var contract = new web3.eth.Contract(JSON.parse(contract_interface), contract);
+    var contract = new web3.eth.Contract(JSON.parse(contract_interface), contractAddress);
     console.log(contract.methods.end);
-    var result = await contract.methods.end(results.draw, results.won_team1).send({ from: config.etherAccount }, function (e, result) {
-        callback(e, result);
+
+    var gasEstimated = 0;
+    await contract.methods.end(results.draw, results.won_team1).estimateGas(function (err, gas) {
+        gasEstimated = gas * 100;
     });
+    console.log(gasEstimated);
+    var result = await contract.methods.end(results.draw, results.won_team1).send(
+        {
+            from: config.etherAccount, gas: gasEstimated
+        }
+        , function (e, result) {
+            callback(e, result);
+        }).catch((error) => {
+            console.log(error);
+        });
     await web3.eth.personal.lockAccount(config.etherAccount);
 }
 
 var oracle = function () {
+    console.log('oracle');
     mongoose.connect(config.mongourl);
     findOutdatedContracts((err, games) => {
         if (err) {
             console.log(err);
         } else {
             for (var i in games) {
-                console.log(games[i]);
+                console.log(games[i].id);
                 getGameResult(games[i].id, (err, results) => {
                     if (err) {
                         console.log(err);
@@ -107,13 +121,21 @@ var oracle = function () {
                                 console.log(err);
                             } else {
                                 console.log(result);
+                                games[i].paidoff = true;
+                                games[i].save(function (e) {
+                                    if (e) {
+                                        console.log(err);
+                                    }
+                                });
                             }
-                        })
+                        });
                     }
                 });
             }
         }
     });
+    return 0;
 }
 
-oracle();
+var delay = 60*60*1000;
+setInterval(oracle, delay);

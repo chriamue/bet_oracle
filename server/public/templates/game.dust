@@ -1,8 +1,10 @@
 {>"layouts/master" /}
 
 {<body}
+<h0 class="error text-danger">This runs on rinkeby test network. DON'T USE MAINNET ADDRESSES!</h0>
 <h1>{id}: {time}</h1>
 <h2>{team1} {points1} - {team2} {points2}</h2>
+<h4>Wager: {wager} ETH</h4>
 <h3>Contract Address: <a href="https://rinkeby.etherscan.io/address/{contract}">{contract}</a></h3>
 <h3>Contract Source</h3>
 <textarea cols='80' rows='10'>{bin}</textarea>

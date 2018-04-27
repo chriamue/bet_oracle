@@ -9,7 +9,8 @@ var gameModel = function () {
         team2: String,
         time: Date,
         paidoff: {type: Boolean, default: false},
-        contract: String
+        contract: String,
+        wager: Number
     });
     return mongoose.model('Games', gameSchema);
 };
