@@ -7,5 +7,10 @@
 <h4>Wager: {wager} ETH</h4>
 <h3>Contract Address: <a href="https://rinkeby.etherscan.io/address/{contract}">{contract}</a></h3>
 <h3>Contract Source</h3>
-<textarea cols='80' rows='10'>{bin}</textarea>
+<textarea class="form-control z-depth-1" cols='80' rows='10'>{bin}</textarea>
+
+<h1>How it works:</h1>
+<img src="/img/website.png" class="img-rounded" />
+<img src="/img/create.png" class="img-rounded" /><br/>
+<img src="/img/execute.png" class="img-rounded" /><br/>
 {/body}
