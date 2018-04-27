@@ -1,0 +1,9 @@
+{>"layouts/master" /}
+
+{<body}
+<h1>{id}: {time}</h1>
+<h2>{team1} {points1} - {team2} {points2}</h2>
+<h3>Contract Address: <a href="https://rinkeby.etherscan.io/address/{contract}">{contract}</a></h3>
+<h3>Contract Source</h3>
+<textarea cols='80' rows='10'>{bin}</textarea>
+{/body}

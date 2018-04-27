@@ -1,7 +1,0 @@
-{>"layouts/master" /}
-
-{<body}
-{#games}
-  <a href='/game/{gameid}'> {team1}-{team2}</a><br/>
-{/games}
-{/body}
