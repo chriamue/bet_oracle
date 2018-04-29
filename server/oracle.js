@@ -86,7 +86,7 @@ var endContract = async function (contractAddress, results, callback) {
 
     var gasEstimated = 0;
     await contract.methods.end(results.draw, results.won_team1).estimateGas(function (err, gas) {
-        gasEstimated = gas * 100;
+        gasEstimated = gas * 2;
     });
     console.log(gasEstimated);
     var result = await contract.methods.end(results.draw, results.won_team1).send(
