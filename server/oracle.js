@@ -10,7 +10,7 @@ var GameModel = require('./models/game');
 
 var web3 = new Web3();
 web3.setProvider(new Web3.providers.HttpProvider(config.etherHost));
-var gasPrice = 1000000000;
+var gasPrice = (1000000000).toString();
 web3.eth.getGasPrice(function (error, result) {
     if (error)
         console.log(error);
@@ -91,7 +91,7 @@ var endContract = async function (contractAddress, results, callback) {
     console.log(gasEstimated);
     var result = await contract.methods.end(results.draw, results.won_team1).send(
         {
-            from: config.etherAccount, gas: gasEstimated
+            from: config.etherAccount, gas: gasEstimated, gasPrice: gasPrice.toString()
         }
         , function (e, result) {
             callback(e, result);
