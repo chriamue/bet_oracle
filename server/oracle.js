@@ -88,6 +88,11 @@ var endContract = async function (contractAddress, results, callback) {
     await contract.methods.end(results.draw, results.won_team1).estimateGas(function (err, gas) {
         gasEstimated = gas * 2;
     });
+    await web3.eth.getGasPrice(function (error, result) {
+        if (error)
+            console.log(error);
+        gasPrice = result;
+    });
     console.log(gasEstimated);
     var result = await contract.methods.end(results.draw, results.won_team1).send(
         {

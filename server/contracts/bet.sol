@@ -15,6 +15,9 @@ contract Bet {
     }
 
     address public oracle;
+    mapping(uint => address) draw_participants;
+    mapping(uint => address) team1_participants;
+    mapping(uint => address) team2_participants;
 
     mapping(uint => Participant) participants;
 
@@ -32,31 +35,19 @@ contract Bet {
     }
 
     function bet_draw() payable costs(_wager) public{
-        participants[participant_count] = Participant({
-            bet_on_draw: true,
-            bet_on_team1: false,
-            delegate: msg.sender
-            });
+        draw_participants[draw_count] = msg.sender;
         participant_count++;
         draw_count++;
     }
 
     function bet_team1() payable costs(_wager) public{
-        participants[participant_count] = Participant({
-            bet_on_draw: false,
-            bet_on_team1: true,
-            delegate: msg.sender
-            });
+        team1_participants[team1_count] = msg.sender;
         participant_count++;
         team1_count++;
     }
 
     function bet_team2() payable costs(_wager) public{
-        participants[participant_count] = Participant({
-            bet_on_draw: false,
-            bet_on_team1: false,
-            delegate: msg.sender
-            });
+        team2_participants[team2_count] = msg.sender;
         participant_count++;
         team2_count++;
     }
@@ -106,22 +97,19 @@ contract Bet {
             uint win = _wager;
             if(draw_){
                 win = win_on_draw();
-                for(uint i = 0; i < participant_count; i++){
-                    if(participants[i].bet_on_draw){
-                        participants[i].delegate.transfer(win);
-                    }
+                for(uint i = 0; i < draw_count; i++){
+                    draw_participants[i].transfer(win);
                 }
             }else{
                 if(team1_won){
                     win = win_on_team1();
+                    for(uint j = 0; j < team1_count; j++){
+                        team1_participants[j].transfer(win);
+                    }
                 }else{
                     win = win_on_team2();
-                }
-                for(uint j = 0; j < participant_count; j++){
-                    if(participants[j].bet_on_team1 == team1_won){
-                        if(participants[j].bet_on_draw == false){
-                            participants[j].delegate.transfer(win);
-                        }
+                    for(uint k = 0; k < team1_count; k++){
+                        team1_participants[k].transfer(win);
                     }
                 }
             }
